@@ -18,12 +18,12 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
     bool increasing = this->get_state_class() == sensor::STATE_CLASS_TOTAL_INCREASING;
     if (increasing) {
       float base = std::isnan(this->state) ? 0.0f : this->state;
-      //this->publish_state(base + val * 10);
+      this->publish_state(base + val * 10);
     } else {
-      //if (val < 0.1)
-        //this->publish_state(NAN);
-      //else
-        //this->publish_state(val * 100);
+      if (val < 0.1)
+        this->publish_state(NAN);
+      else
+        this->publish_state(val * 100);
     }
   }
   void dump_config() override {
@@ -40,7 +40,7 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
   }
 
  protected:
-  float somevar_{0.3};
+  float somevar_{0.0};
 };
 
 }  // namespace demo
