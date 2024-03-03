@@ -22,6 +22,15 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
         this->publish_state(val * 100);
     }
   }
+  void set_somevar(float value) {
+    this->somevar_ = value;
+  }
+  float get_somevar() {
+    return this->somevar_ * 2.0; 
+  }
+
+ protected:
+  float somevar_{0.3};
 };
 
 }  // namespace demo
