@@ -78,6 +78,5 @@ async def to_code(config):
     await cg.register_component(var, config)
     
     for conf in config[CONF_SENSORS]:
-        var = await sensor.new_sensor(conf)
         await cg.register_component(var, conf)
-
+        await sensor.register_sensor(var, conf)
