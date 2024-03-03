@@ -141,29 +141,6 @@ CONFIG_SCHEMA = cv.Schema(
                     CONF_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
                     CONF_STATE_CLASS: STATE_CLASS_MEASUREMENT,
                 },
-                {
-                    CONF_NAME: "Demo Temperature Sensor",
-                    CONF_UNIT_OF_MEASUREMENT: UNIT_CELSIUS,
-                    CONF_ICON: ICON_THERMOMETER,
-                    CONF_ACCURACY_DECIMALS: 1,
-                    CONF_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
-                    CONF_STATE_CLASS: STATE_CLASS_MEASUREMENT,
-                },
-                {
-                    CONF_NAME: "Demo Force Update Sensor",
-                    CONF_UNIT_OF_MEASUREMENT: UNIT_PERCENT,
-                    CONF_ACCURACY_DECIMALS: 0,
-                    CONF_DEVICE_CLASS: DEVICE_CLASS_HUMIDITY,
-                    CONF_STATE_CLASS: STATE_CLASS_MEASUREMENT,
-                    CONF_FORCE_UPDATE: True,
-                },
-                {
-                    CONF_NAME: "Demo Energy Sensor",
-                    CONF_UNIT_OF_MEASUREMENT: UNIT_WATT_HOURS,
-                    CONF_ACCURACY_DECIMALS: 0,
-                    CONF_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    CONF_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
-                },
             ],
         ): [
             sensor.sensor_schema(DemoSensor, accuracy_decimals=0).extend(
