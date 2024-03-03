@@ -12,7 +12,9 @@ static const char *const TAG = "demo22";
 class DemoSensor : public sensor::Sensor, public PollingComponent {
  public:
   void update() override {
-    float val = random_float();
+    //float val = random_float();
+    float val = somevar_;
+    somevar_ = somevar_ + 0.01;
     bool increasing = this->get_state_class() == sensor::STATE_CLASS_TOTAL_INCREASING;
     if (increasing) {
       float base = std::isnan(this->state) ? 0.0f : this->state;
