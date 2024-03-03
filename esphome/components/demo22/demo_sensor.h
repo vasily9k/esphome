@@ -7,6 +7,8 @@
 namespace esphome {
 namespace demo {
 
+static const char *const TAG = "demo22";
+
 class DemoSensor : public sensor::Sensor, public PollingComponent {
  public:
   void update() override {
