@@ -60,6 +60,7 @@ class Sim800LComponent : public uart::UARTDevice, public PollingComponent {
 #endif
 #ifdef USE_SENSOR
   void set_rssi_sensor(sensor::Sensor *rssi_sensor) { rssi_sensor_ = rssi_sensor; }
+  void set_callstate_sensor(sensor::Sensor *callstate_sensor) { callstate_sensor_ = callstate_sensor; }
 #endif
   void add_on_sms_received_callback(std::function<void(std::string, std::string)> callback) {
     this->sms_received_callback_.add(std::move(callback));
@@ -93,6 +94,7 @@ class Sim800LComponent : public uart::UARTDevice, public PollingComponent {
 
 #ifdef USE_SENSOR
   sensor::Sensor *rssi_sensor_{nullptr};
+  sensor::Sensor *callstate_sensor_{nullptr};
 #endif
   std::string sender_;
   std::string message_;

@@ -288,7 +288,15 @@ void Sim800LComponent::parse_cmd_(std::string message) {
           if (item == 3) {  // stat
             uint8_t current_call_state = parse_number<uint8_t>(message.substr(start, end - start)).value_or(6);
             if (current_call_state != this->call_state_) {
+#ifdef USE_SENSOR
+              if (this->callstate_sensor_ != nullptr) {
+                this->callstate_sensor_->publish_state(current_call_state);
+              } else {
+                ESP_LOGD(TAG, "Call state is now: %d", current_call_state);
+              }
+#else
               ESP_LOGD(TAG, "Call state is now: %d", current_call_state);
+#endif
               if (current_call_state == 0)
                 this->call_connected_callback_.call();
             }
@@ -375,6 +383,7 @@ void Sim800LComponent::parse_cmd_(std::string message) {
       this->state_ = STATE_INIT;
       break;
     case STATE_PARSE_CLIP:
+      ESP_LOGI(TAG, "call_state_ %d", this->call_state_);
       if (message.compare(0, 6, "+CLIP:") == 0) {
         std::string caller_id;
         size_t start = 7;
@@ -394,9 +403,9 @@ void Sim800LComponent::parse_cmd_(std::string message) {
         }
         if (this->call_state_ != 4) {
           this->call_state_ = 4;
-          ESP_LOGI(TAG, "Incoming call from %s", caller_id.c_str());
-          incoming_call_callback_.call(caller_id);
         }
+        ESP_LOGI(TAG, "Incoming call from %s", caller_id.c_str());
+        incoming_call_callback_.call(caller_id);
         this->state_ = STATE_INIT;
       }
       break;
@@ -468,6 +477,7 @@ void Sim800LComponent::dump_config() {
 #endif
 #ifdef USE_SENSOR
   LOG_SENSOR("  ", "Rssi", this->rssi_sensor_);
+  LOG_SENSOR("  ", "Callstate", this->callstate_sensor_);
 #endif
 }
 void Sim800LComponent::dial(const std::string &recipient) {
