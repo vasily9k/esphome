@@ -73,6 +73,7 @@ CONF_NUMBERS = "numbers"
 
 CONFIG_SCHEMA = cv.Schema(
     {
+        cv.GenerateID(): cv.declare_id(DemoSensor),
         cv.Optional(
             CONF_BINARY_SENSORS,
             default=[
