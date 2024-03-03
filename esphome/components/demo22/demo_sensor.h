@@ -25,16 +25,16 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
     }
   }
   void dump_config() override {
-      LOG_SENSOR("", "ADC Sensor", this);
+      LOG_SENSOR(TAG, "Demo Sensor", this);
       ESP_LOGCONFIG(TAG, " Preved!!");
   }
 
   void set_somevar(float value) {
-    this->somevar_ = value;
+    //this->somevar_ = value;
   }
   float get_somevar() {
-    float temp = 2.0 * (this->somevar_);
-    return temp; 
+    //float temp = 2.0 * (this->somevar_);
+    return 3.8; 
   }
 
  protected:
