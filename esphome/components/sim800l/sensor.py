@@ -6,6 +6,8 @@ from esphome.const import (
     ENTITY_CATEGORY_DIAGNOSTIC,
     STATE_CLASS_MEASUREMENT,
     UNIT_DECIBEL_MILLIWATT,
+    UNIT_EMPTY,
+    DEVICE_CLASS_EMPTY,
 )
 from . import CONF_SIM800L_ID, Sim800LComponent
 
@@ -13,12 +15,21 @@ DEPENDENCIES = ["sim800l"]
 
 CONF_RSSI = "rssi"
 
+CONF_CALLSTATE = "callstate"
+
 CONFIG_SCHEMA = {
     cv.GenerateID(CONF_SIM800L_ID): cv.use_id(Sim800LComponent),
     cv.Optional(CONF_RSSI): sensor.sensor_schema(
         unit_of_measurement=UNIT_DECIBEL_MILLIWATT,
         accuracy_decimals=0,
         device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
+        state_class=STATE_CLASS_MEASUREMENT,
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+    ),
+    cv.Optional(CONF_CALLSTATE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_EMPTY,
         state_class=STATE_CLASS_MEASUREMENT,
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
     ),
@@ -31,3 +42,7 @@ async def to_code(config):
     if CONF_RSSI in config:
         sens = await sensor.new_sensor(config[CONF_RSSI])
         cg.add(sim800l_component.set_rssi_sensor(sens))
+
+    if CONF_CALLSTATE in config:
+        sens = await sensor.new_sensor(config[CONF_CALLSTATE])
+        cg.add(sim800l_component.set_callstate_sensor(sens))
