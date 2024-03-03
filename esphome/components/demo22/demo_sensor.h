@@ -30,11 +30,11 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
   }
 
   void set_somevar(float value) {
-    //this->somevar_ = value;
+    this->somevar_ = value;
   }
   float get_somevar() {
-    //float temp = 2.0 * (this->somevar_);
-    return 3.8; 
+    float temp = 2.0 * (this->somevar_);
+    return temp; 
   }
 
  protected:
