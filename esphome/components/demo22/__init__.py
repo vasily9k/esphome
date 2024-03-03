@@ -45,11 +45,8 @@ AUTO_LOAD = [
     "sensor",
 ]
 
-demo_ns = cg.esphome_ns.namespace("demo")
+demo_ns = cg.esphome_ns.namespace("demo22")
 DemoSensor = demo_ns.class_("DemoSensor", sensor.Sensor, cg.PollingComponent)
-
-
-
 
 
 CONFIG_SCHEMA = cv.Schema(
@@ -68,7 +65,7 @@ CONFIG_SCHEMA = cv.Schema(
                 },
             ],
         ): [
-            sensor.sensor_schema(DemoSensor, accuracy_decimals=0).extend(
+            sensor.sensor_schema(DemoSensor, accuracy_decimals=2).extend(
                 cv.polling_component_schema("60s")
             )
         ],

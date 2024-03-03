@@ -5,7 +5,7 @@
 #include "esphome/components/sensor/sensor.h"
 
 namespace esphome {
-namespace demo {
+namespace demo22 {
 
 static const char *const TAG = "demo22";
 
@@ -43,5 +43,5 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
   float somevar_{0.0};
 };
 
-}  // namespace demo
+}  // namespace demo22
 }  // namespace esphome
