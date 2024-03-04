@@ -74,9 +74,6 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 async def to_code(config):
-    #var = cg.new_Pvariable(config[CONF_ID])
-    #await cg.register_component(var, config)
-    
     for conf in config[CONF_SENSORS]:
         var = await sensor.new_sensor(conf)
         await cg.register_component(var, conf)
