@@ -27,7 +27,7 @@ class DemoSensor : public sensor::Sensor, public PollingComponent {
     }
   }
   void dump_config() override {
-      LOG_SENSOR("Demo Sensor", this);
+      LOG_SENSOR("", "Demo Sensor", this);
       ESP_LOGCONFIG(TAG, " Preved!!");
   }
 
