@@ -76,3 +76,4 @@ AddressableFireworksEffect = light_ns.class_(
 AddressableFlickerEffect = light_ns.class_(
     "AddressableFlickerEffect", AddressableLightEffect
 )
+AddressableMy1Effect = light_ns.class_("AddressableMy1Effect", AddressableLightEffect)

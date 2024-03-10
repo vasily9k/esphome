@@ -191,6 +191,86 @@ class AddressableScanEffect : public AddressableLightEffect {
   bool direction_{true};
 };
 
+class AddressableMy1Effect : public AddressableLightEffect {
+ public:
+  explicit AddressableMy1Effect(const std::string &name) : AddressableLightEffect(name) {}
+  void set_my1_move_interval(uint32_t move_interval) { this->move_interval_ = move_interval; }
+  void set_my1_width(uint32_t scan_width) { this->scan_width_ = scan_width; }
+  void set_my1_block_width(uint32_t block_width) { this->block_width_ = block_width; }
+  void apply(AddressableLight &it, const Color &current_color) override {
+    const uint32_t now = millis();
+    if (now - this->last_move_ < this->move_interval_)
+      return;
+
+    if (direction_) {
+      this->at_led_++;
+      if (this->at_led_ == it.size() - this->scan_width_)
+        this->direction_ = false;
+    } else {
+      this->at_led_--;
+      if (this->at_led_ == 0)
+        this->direction_ = true;
+    }
+    this->last_move_ = now;
+
+    it.all() = Color::BLACK;
+
+    if (this->block_wait_counter_++ > this->block_div_ ) {
+      this->block_wait_counter_ = 0;
+      this->block_pos_++;
+      if (this->block_pos_ > it.size()) {
+        this->block_pos_ = 0;
+      }
+    }
+
+    for (uint32_t i = 0; i < this->block_width_; i++) {
+      it[this->block_pos_ + i] = Color(this->block_pattern_[i]);
+    }
+
+    
+    Color tmp_color = Color::random_color();
+    for (uint32_t i = 0; i < this->scan_width_; i++) {
+      tmp_color.b = 0;
+      
+      it[this->at_led_ + i] = tmp_color;
+      tmp_color.r = 255;
+      it[this->at_led_ + i + 1] = tmp_color;
+    }
+
+    it.schedule_show();
+  }
+
+ protected:
+  uint32_t move_interval_{};
+  uint32_t scan_width_{1};
+  uint32_t last_move_{0};
+  uint32_t at_led_{0};
+  bool direction_{true};
+
+  uint32_t block_pos_{0};
+  uint32_t block_div_{5};
+  uint32_t block_wait_counter_{0};
+  uint32_t block_width_{5};
+  uint32_t block_pattern_[15]{
+    0x0000FF,
+    0x5F8000,
+    0xFFFF00,
+    0xFFCC88,
+    0xFFEE00,
+    0xFFDD00,
+    0xFFCC00,
+    0xFFAA00,
+    0xFF9900,
+    0xFF8800,
+    0xFF7700,
+    0xFF6600,
+    0xFF6644,
+    0xFF6666,
+    0xFF6688
+  };
+};
+
+
 class AddressableTwinkleEffect : public AddressableLightEffect {
  public:
   explicit AddressableTwinkleEffect(const std::string &name) : AddressableLightEffect(name) {}
