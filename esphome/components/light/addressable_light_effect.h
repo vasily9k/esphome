@@ -217,8 +217,9 @@ class AddressableMy1Effect : public AddressableLightEffect {
 
     if (this->block_wait_counter_++ > this->block_div_ ) {
       this->block_wait_counter_ = 0;
+
       this->block_pos_++;
-      if (this->block_pos_ > it.size()) {
+      if (this->block_pos_ == it.size() - this->block_width_) {
         this->block_pos_ = 0;
       }
     }
@@ -258,7 +259,7 @@ class AddressableMy1Effect : public AddressableLightEffect {
     0xFFCC88,
     0xFFEE00,
     0xFFDD00,
-    0xFFCC00,
+    0xCC8800,
     0xFFAA00,
     0xFF9900,
     0xFF8800,
