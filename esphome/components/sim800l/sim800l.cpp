@@ -102,6 +102,7 @@ void Sim800LComponent::parse_cmd_(std::string message) {
   } else if (ok && (this->state_ != STATE_PARSE_SMS_RESPONSE && this->state_ != STATE_CHECK_CALL &&
                     this->state_ != STATE_RECEIVE_SMS && this->state_ != STATE_DIALING2)) {
     ESP_LOGW(TAG, "Received unexpected OK. Ignoring");
+    ESP_LOGW(TAG, "this->state_: %d, message: %s", this->state_, message.c_str());
     return;
   }
 
