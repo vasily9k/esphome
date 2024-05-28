@@ -71,7 +71,7 @@ void Sim800LComponent::parse_cmd_(std::string message) {
     return;
 
   ESP_LOGV(TAG, "R: %s - %d", message.c_str(), this->state_);
-  ESP_LOGD(TAG, "this->state_: %d, message: %s", this->state_, message.c_str());
+  // ESP_LOGD(TAG, "this->state_: %d, message: %s", this->state_, message.c_str());
 
   if (this->state_ != STATE_RECEIVE_SMS) {
     if (message == "RING") {
