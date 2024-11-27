@@ -195,13 +195,14 @@ template<typename... Ts> class HttpRequestSendAction : public Action<Ts...> {
 
     size_t content_length = container->content_length;
     size_t max_length = std::min(content_length, this->max_response_buffer_size_);
+    // https://github.com/vasily9k get base code from Mike Ford https://github.com/HLFCode/esphome
+    // https://github.com/esphome/esphome/commit/a5dca6c8d30be7c9d2550223112a2f8a56166ca7#diff-1cf5bd82614da7ca2744ef3946b1ab6842d7652822ba1f00fc5c34ad6abd94bcR201
 
     // Returned header Content_Length = -1 is no helpful so we need
     // to keep track of read bytes in the body rather than assume we need to read Content_Length bytes
     bool invalid_content_length = (int) content_length < 0;
     if (invalid_content_length) {
       max_length = this->max_response_buffer_size_;
-      //ESP_LOGD("mjf", "Invalid content length %d, buffer set to %d", content_length, max_length);
     }
 
     std::string response_body;
@@ -229,13 +230,37 @@ template<typename... Ts> class HttpRequestSendAction : public Action<Ts...> {
       }
     }
     // TODO: understand why response body has two leading bytes (ascii encoded length)
+    // Keep trying to understand
+    //ESP_LOGD("v9k", "response_body before erase: %s", response_body.c_str());
+    //for (size_t i = 0; i < response_body.length(); i++) {
+    //    char c = response_body[i];
+    //    char hex_buffer[5];
+    //    sprintf(hex_buffer, "0x%02X", static_cast<unsigned char>(c));
+    //    ESP_LOGD("Tag", "Character: '%c' Hex: %s", c, hex_buffer);
+    //}
+    // As result: response body has redundant 4 leading bytes (N, N, 0x0D, 0x0A)
+    // and 7 trailing bytes (0x0D, 0x0A, '0', 0x0D, 0x0A, 0x0D, 0x0A)
+
+
     if (invalid_content_length) {
       // strip the leading first two bytes (handle differently when above TODO is understood)
       if (response_body.length() > 2) {
-        response_body.erase(0, 2);
+        // strip 4 leading and 7 trailing bytes
+        response_body.erase(0, 4);
+        response_body.erase(response_body.length() - 7, 7);
       }
       container->content_length = response_body.length();
     }
+    // result check
+
+    //ESP_LOGD("v9k", "response_body after erase: %s", response_body.c_str());
+    //for (size_t i = 0; i < response_body.length(); i++) {
+    //    char c = response_body[i];
+    //    char hex_buffer[5];
+    //    sprintf(hex_buffer, "0x%02X", static_cast<unsigned char>(c));
+    //    ESP_LOGD("v9k", "№%D. Character: '%c' Hex: %s", i, c, hex_buffer);
+    //}
+
     if (this->response_triggers_.size() == 1) {
       // if there is only one trigger, no need to copy the response body
       this->response_triggers_[0]->process(container, response_body);
