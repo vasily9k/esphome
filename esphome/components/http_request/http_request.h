@@ -278,9 +278,9 @@ template<typename... Ts> class HttpRequestSendAction : public Action<Ts...> {
     //      yield();
     //    }
     //}
-    //if (invalid_content_length) {
-    //  ESP_LOGD("v9k", "content length was corrected to %d", body_len);
-    //}
+    if (invalid_content_length) {
+      ESP_LOGD("http_request", "Content-Length (adjusted): %d", container->content_length);
+    }
 
     if (this->response_triggers_.size() == 1) {
       // if there is only one trigger, no need to copy the response body
