@@ -203,6 +203,7 @@ template<typename... Ts> class HttpRequestSendAction : public Action<Ts...> {
     bool invalid_content_length = (int) content_length < 0;
     if (invalid_content_length) {
       max_length = this->max_response_buffer_size_;
+      ESP_LOGD("v9k", "max_length: %d", max_length);
     }
 
     std::string response_body;
@@ -219,6 +220,8 @@ template<typename... Ts> class HttpRequestSendAction : public Action<Ts...> {
           int read = container->read(buf + read_index, std::min<size_t>(max_length - read_index, 512));
           App.feed_wdt();
           yield();
+          ESP_LOGD("v9k", "read: %d, read_index: %d, last_read_index: %d",
+            read, read_index, last_read_index);
           // Detect an attempt to read backwards (negative 'read')
           if (read < 0) break;
           read_index += read;
@@ -231,35 +234,54 @@ template<typename... Ts> class HttpRequestSendAction : public Action<Ts...> {
     }
     // TODO: understand why response body has two leading bytes (ascii encoded length)
     // Keep trying to understand
-    //ESP_LOGD("v9k", "response_body before erase: %s", response_body.c_str());
-    //for (size_t i = 0; i < response_body.length(); i++) {
-    //    char c = response_body[i];
-    //    char hex_buffer[5];
-    //    sprintf(hex_buffer, "0x%02X", static_cast<unsigned char>(c));
-    //    ESP_LOGD("Tag", "Character: '%c' Hex: %s", c, hex_buffer);
-    //}
-    // As result: response body has redundant 4 leading bytes (N, N, 0x0D, 0x0A)
+    size_t body_len = response_body.length();
+    ESP_LOGD("v9k", "response_body lenth before erase: %d", body_len);
+    for (size_t i = 0; i < body_len; i++) {
+        if (i < 20 || i + 20 > body_len) {
+          char c = response_body[i];
+          char hex_buffer[5];
+          sprintf(hex_buffer, "0x%02X", static_cast<unsigned char>(c));
+          ESP_LOGD("before", "№%D. Character: '%c' Hex: %s", i, c, hex_buffer);
+          App.feed_wdt();
+          yield();
+        }
+    }
+    // As result: response body has redundant 4-6 leading bytes (L1, L2, L3*, L4*, 0x0D, 0x0A)
     // and 7 trailing bytes (0x0D, 0x0A, '0', 0x0D, 0x0A, 0x0D, 0x0A)
-
+    // L1-L4 are from 2 to 4 characters indicating the length of the content in HEX
 
     if (invalid_content_length) {
-      // strip the leading first two bytes (handle differently when above TODO is understood)
+      // trying to find the first LF into body
+      size_t lf_position = response_body.find('\n');
+      if (lf_position == std::string::npos) {
+          ESP_LOGE("Tag", "Can't find 'LF' symbol");
+      }
+
       if (response_body.length() > 2) {
-        // strip 4 leading and 7 trailing bytes
-        response_body.erase(0, 4);
+        // strip (lf_position + 1) leading and 7 trailing bytes
+        response_body.erase(0, lf_position + 1);
         response_body.erase(response_body.length() - 7, 7);
       }
       container->content_length = response_body.length();
     }
     // result check
 
+    body_len = response_body.length();
+
     //ESP_LOGD("v9k", "response_body after erase: %s", response_body.c_str());
-    //for (size_t i = 0; i < response_body.length(); i++) {
-    //    char c = response_body[i];
-    //    char hex_buffer[5];
-    //    sprintf(hex_buffer, "0x%02X", static_cast<unsigned char>(c));
-    //    ESP_LOGD("v9k", "№%D. Character: '%c' Hex: %s", i, c, hex_buffer);
-    //}
+    for (size_t i = 0; i < body_len; i++) {
+        char c = response_body[i];
+        if (i < 20 || i + 20 > body_len) {
+          char hex_buffer[5];
+          sprintf(hex_buffer, "0x%02X", static_cast<unsigned char>(c));
+          ESP_LOGD("after", "№%D. Character: '%c' Hex: %s", i, c, hex_buffer);
+          App.feed_wdt();
+          yield();
+        }
+    }
+    if (invalid_content_length) {
+      ESP_LOGD("v9k", "content length was corrected to %d", body_len);
+    }
 
     if (this->response_triggers_.size() == 1) {
       // if there is only one trigger, no need to copy the response body
