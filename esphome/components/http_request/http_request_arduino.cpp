@@ -97,6 +97,8 @@ std::shared_ptr<HttpContainer> HttpRequestArduino::start(std::string url, std::s
   }
   for (const auto &header : headers) {
     container->client_.addHeader(header.name, header.value, false, true);
+    ESP_LOGD(TAG, "addHeader name: %s - value: %s", header.name, header.value);
+    App.feed_wdt(); 
   }
 
   // returned needed headers must be collected before the requests
